@@ -1,0 +1,39 @@
+import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+// Define the base URL of the API
+const BASE_URL = 'https://petstore.swagger.io/v2';
+
+// Define the statuses to test
+const STATUSES = ['available', 'pending', 'sold'];
+
+// Test options
+export let options = {
+    stages: [
+        { duration: '30s', target: 9 }, // Ramp up to 9 users over 30 seconds
+        { duration: '1m', target: 9 },  // Stay at 9 users for 1 minute
+        { duration: '30s', target: 0 },  // Ramp down to 0 users over 30 seconds
+    ],
+};
+
+export default function () {
+    // Iterate through each status
+    STATUSES.forEach(status => {
+        // Make a GET request to the /pet/findByStatus endpoint
+        let res = http.get(`${BASE_URL}/pet/findByStatus?status=${status}`);
+
+        // Check the response status code
+        check(res, {
+            'is status 200': (r) => r.status === 200,
+            'response time <= 200ms': (r) => r.timings.duration <= 200,
+        });
+
+        // Optional: Check the response body
+        check(res, {
+            'response body is not empty': (r) => r.body.length > 0,
+        });
+
+        // Sleep to simulate user think time
+        sleep(1);
+    });
+}

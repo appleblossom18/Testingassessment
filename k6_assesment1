@@ -1,0 +1,48 @@
+import http from 'k6/http';
+import {sleep} from 'k6';
+import {check} from 'k6';//for checking assertion
+export const options={
+    //to get no of virtual users /threads
+    vus:1,
+    duration: '5s',
+}
+
+
+export default function () {
+    const url = 'https://petstore.swagger.io/v2/pet';
+
+    const payload = {
+        "id": 0,
+        "category": {
+          "id": 0,
+          "name": "string"
+        },
+        "name": "doggie",
+        "photoUrls": [
+          "string"
+        ],
+        "tags": [
+          {
+            "id": 0,
+            "name": "string"
+          }
+        ],
+        "status": "available"
+      };
+    const params = {
+      headers: {
+        
+        'Content-Type': 'application/json',
+      },
+    };
+
+    const response = http.post(url,payload,params);
+    check(response,{
+        'is status 401' :(r) => r.status ===200,
+        'is response body names':(c) => c.body.includes('doggie')
+   
+      });
+    check(http.get(url, params), {
+      'status is 200': (r) => r.status == 200,
+    }) 
+  }

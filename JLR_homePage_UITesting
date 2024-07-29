@@ -1,0 +1,157 @@
+package Selenium;
+
+import java.time.Duration;
+import java.util.ArrayList;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.WindowType;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import org.openqa.selenium.interactions.Actions;
+import org.testng.Assert;
+import org.testng.annotations.*;
+
+public class JLRHomePage {
+
+	public String baseURl= "https://www.jaguarlandrover.com";
+	public WebDriver driver;
+	
+	@BeforeTest
+	public void setup() throws InterruptedException {
+		System.out.println("Before Test");
+		driver = new ChromeDriver();
+		driver.manage().window().maximize();
+		driver.get(baseURl);
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+		//Thread.sleep(20000);
+
+
+	}
+	@Test
+	public void verifyTitle() {
+		 String expectedTitle = "JLR Corporate Website";
+		 String actualTitle = driver.getTitle();
+		 if(actualTitle.equals(expectedTitle))
+		 {
+			 System.out.println("Title verification is passed");
+			 
+		 }
+		 else
+		 {
+			 System.out.println("Title verification is failed" +expectedTitle);
+		 }
+
+	}
+	
+
+//Whether user is able to scroll down 
+	
+	@Test
+	 public void scroll() throws InterruptedException {
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
+		jse.executeScript("window.scrollBy(0,1600)");
+		//driver.findElement(By.xpath("//img[@alt='RR HOB']")).click();
+		Thread.sleep(1000);
+	}
+	// Test whether user is able to click on Learn more button of OurPurpose
+	@Test
+	public void HomePage() throws InterruptedException {
+		
+		
+	//WebElement e =	driver.findElement(By.xpath("//*[@class='nav-2024__toggle']"));
+		
+	//Actions act = new Actions(driver);//Mouse hover actions, we pass driver instance
+	//act.moveToElement(e).perform();
+		
+		String s1 ="OUR PURPOSE";
+		if(driver.getPageSource().contains("OUR PURPOSE")) {
+			System.out.println("Content"+s1+"is present");
+		}
+		
+		else {
+			System.out.println("Content"+s1+"is not present");
+		}
+		//driver.switchTo().newWindow(WindowType.TAB);
+		//ArrayList<String> switchtab =new ArrayList<String>(driver.getWindowHandles());
+		//driver.switchTo().window(switchtab.get(0));
+	driver.findElement(By.xpath("//*[@href='https://www.jaguarlandrover.com/people']")).click();
+	
+	//act.moveToElement(e).build().perform();
+	Thread.sleep(5000);
+		
+	}
+	
+	//To Test whether there is content called Leadership and click on learn more button
+	@Test
+	public void verifyText() throws InterruptedException {
+		
+		//ArrayList<String> switchtab =new ArrayList<String>(driver.getWindowHandles());
+		//driver.switchTo().window(switchtab.get(0));
+		driver.navigate().back();
+		driver.navigate().refresh();
+		
+		JavascriptExecutor jse1 = (JavascriptExecutor) driver;
+		jse1.executeScript("window.scrollBy(0,1450)");
+		//driver.findElement(By.xpath("//img[@alt='RR HOB']")).click();
+		Thread.sleep(1000);
+		
+		String s2 ="LEADERSHIP";
+		if(driver.getPageSource().contains("LEADERSHIP")) {
+			System.out.println("The content of LEADERSHIP"+s2+"is present");
+		}
+		
+		else {
+			System.out.println("The content of LEADERSHIP"+s2+"is not present");
+		}
+	
+		//driver.findElement(By.xpath("//*[@href='https://www.jaguarlandrover.com/leadership']")).click();
+		driver.findElement(By.xpath("//*[@href='https://www.jaguarlandrover.com/leadership']")).click();
+		Thread.sleep(2000);
+	}
+	
+	// To test whether user is able to click on news button in new tab and get the title of the url
+	
+	@Test
+	public void News() throws InterruptedException {
+		 driver.navigate().back();
+		 driver.navigate().refresh();
+		 Thread.sleep(2000);
+		 JavascriptExecutor jse2 = (JavascriptExecutor) driver;
+			jse2.executeScript("window.scrollBy(0,1600)");
+			String s3= "LEARN MORE FROM OUR LATEST STORIES";
+			if(s3.contains("LEARN MORE FROM OUR LATEST STORIES")) {
+				//driver.switchTo().newWindow(WindowType.TAB);
+				WebElement wb = driver.findElement(By.xpath("//*[@class='block__section block__col block__col--50 block__col--vcenter']"));
+				Actions action = new Actions(driver);
+				action.keyDown(Keys.CONTROL).moveToElement(wb).click().perform();
+				ArrayList<String> switchtab =new ArrayList<String>(driver.getWindowHandles());
+				driver.switchTo().window(switchtab.get(1));
+				Thread.sleep(2000);
+			String actualTitle =	driver.getTitle();
+			System.out.println("The title is of news page " +actualTitle );
+			
+			String expectedTitle= "JLR Corporate Homepage International";
+			Assert.assertEquals(actualTitle, expectedTitle);
+			
+			System.out.println("Test completed");
+			}
+		}
+		
+		
+				
+	
+	@AfterTest
+	public void closeWindow() throws InterruptedException {
+		
+		Thread.sleep(3000);
+		driver.close();
+		driver.quit();
+		
+	}
+	
+	
+}
