@@ -22,18 +22,18 @@ export default function () {
         // Make a GET request to the /pet/findByStatus endpoint
         let res = http.get(`${BASE_URL}/pet/findByStatus?status=${status}`);
 
-        // Check the response status code
+      
         check(res, {
             'is status 200': (r) => r.status === 200,
             'response time <= 200ms': (r) => r.timings.duration <= 200,
         });
 
-        // Optional: Check the response body
+        
         check(res, {
             'response body is not empty': (r) => r.body.length > 0,
         });
 
-        // Sleep to simulate user think time
+       
         sleep(1);
     });
 }
